@@ -43,6 +43,16 @@ const Footer = () => {
                   Smile Gallery
                 </Link>
               </li>
+              <li>
+                <Link to="/blog" className="hover:text-[hsl(var(--mint))] transition-smooth">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="hover:text-[hsl(var(--mint))] transition-smooth">
+                  FAQ
+                </Link>
+              </li>
             </ul>
           </div>
 
