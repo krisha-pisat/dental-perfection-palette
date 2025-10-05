@@ -85,10 +85,8 @@ const Index = () => {
             y: heroY,
           }}
         />
-        <motion.div 
-          className="relative z-10 container mx-auto px-4 text-center text-white"
-          style={{ opacity: heroOpacity }}
-        >
+        {/* Fixed Text - doesn't fade with scroll */}
+        <div className="relative z-10 container mx-auto px-4 text-center text-white">
           <motion.h1 
             className="text-5xl md:text-7xl font-bold mb-6 text-balance"
             initial={{ opacity: 0, y: 30 }}
@@ -133,7 +131,7 @@ const Index = () => {
               <Link to="/services">Explore Our Services</Link>
             </Button>
           </motion.div>
-        </motion.div>
+         </div>
         <motion.div 
           className="absolute bottom-10 left-1/2 -translate-x-1/2"
           animate={{ y: [0, 10, 0] }}
@@ -145,16 +143,18 @@ const Index = () => {
         </motion.div>
       </section>
 
-      {/* Welcome Section - Scroll Animation */}
+      {/* Welcome Section - Text & Image Move Together */}
       <section ref={welcomeRef} className="py-20 bg-gradient-card overflow-hidden">
-        <div className="container mx-auto px-4">
+        <motion.div 
+          className="container mx-auto px-4"
+          style={{ y: welcomeY }}
+        >
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
-              style={{ x: welcomeImageX }}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              initial={{ opacity: 0, x: -100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <img
                 src={doctorImage}
@@ -163,11 +163,10 @@ const Index = () => {
               />
             </motion.div>
             <motion.div
-              style={{ y: welcomeY }}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              initial={{ opacity: 0, x: 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             >
               <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[hsl(var(--navy))]">
                 Welcome to Dental Perfections
@@ -192,7 +191,7 @@ const Index = () => {
               </Button>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Services Section - Stagger Animation */}
