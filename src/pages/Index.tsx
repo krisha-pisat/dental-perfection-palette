@@ -16,8 +16,28 @@ import {
   CheckCircle2,
   Sparkles,
 } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 const Index = () => {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const welcomeRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+  
+  const { scrollYProgress: welcomeScroll } = useScroll({
+    target: welcomeRef,
+    offset: ["start end", "end start"]
+  });
+  
+  const heroY = useTransform(heroScroll, [0, 1], ["0%", "50%"]);
+  const heroOpacity = useTransform(heroScroll, [0, 1], [1, 0.3]);
+  const welcomeY = useTransform(welcomeScroll, [0, 0.5, 1], [100, 0, -50]);
+  const welcomeImageX = useTransform(welcomeScroll, [0, 0.5], [-100, 0]);
+
   const services = [
     {
       icon: Sparkles,
@@ -56,26 +76,45 @@ const Index = () => {
     <div className="min-h-screen">
       <Navigation />
 
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden mt-20">
-        <div
+      {/* Hero Section - Parallax */}
+      <section ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden mt-20">
+        <motion.div
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `linear-gradient(rgba(0, 30, 60, 0.7), rgba(0, 30, 60, 0.5)), url(${heroImage})`,
+            y: heroY,
           }}
         />
-        <div className="relative z-10 container mx-auto px-4 text-center text-white animate-fade-in-up">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-balance">
+        <motion.div 
+          className="relative z-10 container mx-auto px-4 text-center text-white"
+          style={{ opacity: heroOpacity }}
+        >
+          <motion.h1 
+            className="text-5xl md:text-7xl font-bold mb-6 text-balance"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             Experience the Art of a{" "}
             <span className="bg-gradient-mint bg-clip-text text-transparent">
               Perfect Smile
             </span>
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-200">
+          </motion.h1>
+          <motion.p 
+            className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-200"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             Compassionate, state-of-the-art dental care for you and your family in the heart of
             Mumbai
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          </motion.p>
+          <motion.div 
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
             <Button
               asChild
               size="lg"
@@ -93,27 +132,43 @@ const Index = () => {
             >
               <Link to="/services">Explore Our Services</Link>
             </Button>
-          </div>
-        </div>
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-float">
+          </motion.div>
+        </motion.div>
+        <motion.div 
+          className="absolute bottom-10 left-1/2 -translate-x-1/2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
           <div className="w-8 h-12 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
             <div className="w-1.5 h-3 bg-white/70 rounded-full" />
           </div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* Welcome Section */}
-      <section className="py-20 bg-gradient-card">
+      {/* Welcome Section - Scroll Animation */}
+      <section ref={welcomeRef} className="py-20 bg-gradient-card overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="animate-fade-in">
+            <motion.div
+              style={{ x: welcomeImageX }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
               <img
                 src={doctorImage}
                 alt="Dr. [Mother's Name]"
                 className="rounded-2xl shadow-strong w-full max-w-md mx-auto"
               />
-            </div>
-            <div className="animate-slide-in-right">
+            </motion.div>
+            <motion.div
+              style={{ y: welcomeY }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
               <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[hsl(var(--navy))]">
                 Welcome to Dental Perfections
               </h2>
@@ -135,130 +190,182 @@ const Index = () => {
                   Meet Our Team <ArrowRight className="ml-2" />
                 </Link>
               </Button>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Services Section */}
+      {/* Services Section - Stagger Animation */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-fade-in">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-[hsl(var(--navy))]">
               Our Signature Services
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Comprehensive dental solutions tailored to your unique needs
             </p>
-          </div>
+          </motion.div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {services.map((service, index) => (
-              <Card
+              <motion.div
                 key={index}
-                className="group hover:shadow-strong transition-smooth cursor-pointer border-2 hover:border-[hsl(var(--mint))] animate-scale-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <CardContent className="p-6">
-                  <div className="w-16 h-16 rounded-full bg-gradient-mint flex items-center justify-center mb-4 group-hover:scale-110 transition-bounce">
-                    <service.icon className="w-8 h-8 text-[hsl(var(--navy))]" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 text-[hsl(var(--navy))]">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4">{service.description}</p>
-                  <Link
-                    to={service.link}
-                    className="text-[hsl(var(--mint-dark))] font-semibold inline-flex items-center hover:gap-2 transition-smooth group"
-                  >
-                    Learn More <ArrowRight className="ml-1 w-4 h-4" />
-                  </Link>
-                </CardContent>
-              </Card>
+                <Card className="group hover:shadow-strong transition-smooth cursor-pointer border-2 hover:border-[hsl(var(--mint))] h-full">
+                  <CardContent className="p-6">
+                    <motion.div 
+                      className="w-16 h-16 rounded-full bg-gradient-mint flex items-center justify-center mb-4"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
+                      <service.icon className="w-8 h-8 text-[hsl(var(--navy))]" />
+                    </motion.div>
+                    <h3 className="text-xl font-bold mb-3 text-[hsl(var(--navy))]">
+                      {service.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4">{service.description}</p>
+                    <Link
+                      to={service.link}
+                      className="text-[hsl(var(--mint-dark))] font-semibold inline-flex items-center hover:gap-2 transition-smooth group"
+                    >
+                      Learn More <ArrowRight className="ml-1 w-4 h-4" />
+                    </Link>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
+      {/* Why Choose Us Section - Scale In */}
       <section className="py-20 gradient-hero text-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-fade-in">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               The Dental Perfections Difference
             </h2>
             <p className="text-xl text-gray-200 max-w-2xl mx-auto">
               Why thousands of patients trust us with their smiles
             </p>
-          </div>
+          </motion.div>
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {features.map((feature, index) => (
-              <div
+              <motion.div
                 key={index}
-                className="flex items-start gap-4 p-6 rounded-xl bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-smooth animate-fade-in"
-                style={{ animationDelay: `${index * 0.15}s` }}
+                className="flex items-start gap-4 p-6 rounded-xl bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-smooth"
+                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.15 }}
+                whileHover={{ scale: 1.05 }}
               >
                 <CheckCircle2 className="w-6 h-6 text-[hsl(var(--mint))] flex-shrink-0 mt-1" />
                 <p className="text-lg">{feature}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonial Section */}
+      {/* Testimonial Section - Floating Cards */}
       <section className="py-20 bg-gradient-card">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-fade-in">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-[hsl(var(--navy))]">
               Stories That Make Us Smile
             </h2>
             <p className="text-xl text-gray-600">Real experiences from our valued patients</p>
-          </div>
+          </motion.div>
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <Card className="shadow-medium hover:shadow-strong transition-smooth animate-scale-in">
-              <CardContent className="p-8">
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-[hsl(var(--gold))] text-[hsl(var(--gold))]" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-6 italic text-lg leading-relaxed">
-                  "Dr. [Mother's Name] is the most gentle and skilled dentist I have ever visited.
-                  The clinic is immaculate and the entire team makes you feel at ease. My smile has
-                  never looked better!"
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-mint" />
-                  <div>
-                    <p className="font-semibold text-[hsl(var(--navy))]">Priya S.</p>
-                    <p className="text-sm text-gray-500">Bandra, Mumbai</p>
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              whileHover={{ y: -10 }}
+            >
+              <Card className="shadow-medium hover:shadow-strong transition-smooth h-full">
+                <CardContent className="p-8">
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-[hsl(var(--gold))] text-[hsl(var(--gold))]" />
+                    ))}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="shadow-medium hover:shadow-strong transition-smooth animate-scale-in" style={{ animationDelay: "0.1s" }}>
-              <CardContent className="p-8">
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-[hsl(var(--gold))] text-[hsl(var(--gold))]" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-6 italic text-lg leading-relaxed">
-                  "I was terrified of dental procedures, but the team at Dental Perfections made me
-                  feel so comfortable. The painless root canal treatment was nothing like I feared.
-                  Highly recommended!"
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-mint" />
-                  <div>
-                    <p className="font-semibold text-[hsl(var(--navy))]">Rajesh K.</p>
-                    <p className="text-sm text-gray-500">Andheri, Mumbai</p>
+                  <p className="text-gray-700 mb-6 italic text-lg leading-relaxed">
+                    "Dr. [Mother's Name] is the most gentle and skilled dentist I have ever visited.
+                    The clinic is immaculate and the entire team makes you feel at ease. My smile has
+                    never looked better!"
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-mint" />
+                    <div>
+                      <p className="font-semibold text-[hsl(var(--navy))]">Priya S.</p>
+                      <p className="text-sm text-gray-500">Bandra, Mumbai</p>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ y: -10 }}
+            >
+              <Card className="shadow-medium hover:shadow-strong transition-smooth h-full">
+                <CardContent className="p-8">
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-[hsl(var(--gold))] text-[hsl(var(--gold))]" />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 mb-6 italic text-lg leading-relaxed">
+                    "I was terrified of dental procedures, but the team at Dental Perfections made me
+                    feel so comfortable. The painless root canal treatment was nothing like I feared.
+                    Highly recommended!"
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-mint" />
+                    <div>
+                      <p className="font-semibold text-[hsl(var(--navy))]">Rajesh K.</p>
+                      <p className="text-sm text-gray-500">Andheri, Mumbai</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
-          <div className="text-center mt-12">
+          <motion.div 
+            className="text-center mt-12"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             <Button
               asChild
               variant="outline"
@@ -267,7 +374,7 @@ const Index = () => {
             >
               <Link to="/gallery">Read More Patient Stories</Link>
             </Button>
-          </div>
+          </motion.div>
         </div>
       </section>
 
